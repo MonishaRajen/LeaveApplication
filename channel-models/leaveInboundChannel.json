@@ -1,0 +1,1 @@
+{"id":"CHANNEL_MODEL-9d152886-c84a-4f1d-9a2e-0fbaa5120934","name":"Leave Inbound Channel","key":"leaveInboundChannel","description":"","tenantId":"default","editorJson":{"type":"kafka","channelType":"inbound","deserializerType":"json","topics":["leavekafka"],"channelEventKeyDetection":{"fixedValue":"Leave Outbound Event"}}}

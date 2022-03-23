@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:flowable="http://flowable.org/cmmn" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" xmlns:di="http://www.omg.org/spec/CMMN/20151109/DI" xmlns:design="http://flowable.org/design" targetNamespace="http://flowable.org/cmmn">
+  <case id="leaveCaseModel" name="Leave Case Model" flowable:initiatorVariableName="initiator" flowable:candidateStarterGroups="flowableUser">
+    <casePlanModel id="onecaseplanmodel1" name="Case plan model" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:default-menu-navigation-size><![CDATA[expanded]]></flowable:default-menu-navigation-size>
+        <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+        <design:stencilid><![CDATA[CasePlanModel]]></design:stencilid>
+      </extensionElements>
+      <planItem id="planItemhumanTask1" name="Review Leave Application" definitionRef="humanTask1">
+        <itemControl>
+          <repetitionRule flowable:counterVariable="repetitionCounter">
+            <extensionElements></extensionElements>
+          </repetitionRule>
+        </itemControl>
+        <entryCriterion id="entryCriterion1" sentryRef="sentryentryCriterion1"></entryCriterion>
+      </planItem>
+      <planItem id="planItemdataObjectCreateTask1" name="Create" definitionRef="dataObjectCreateTask1">
+        <entryCriterion id="entryCriterion2" sentryRef="sentryentryCriterion2"></entryCriterion>
+      </planItem>
+      <planItem id="planItemeventListener1" definitionRef="eventListener1">
+        <itemControl>
+          <repetitionRule flowable:counterVariable="repetitionCounter">
+            <extensionElements></extensionElements>
+          </repetitionRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItemhumanTask2" name="Show Forms" definitionRef="humanTask2">
+        <entryCriterion id="entryCriterion3" sentryRef="sentryentryCriterion3"></entryCriterion>
+      </planItem>
+      <sentry id="sentryexitCriterion1">
+        <extensionElements>
+          <design:stencilid><![CDATA[ExitCriterion]]></design:stencilid>
+        </extensionElements>
+        <planItemOnPart id="sentryOnPartexitCriterion1" sourceRef="planItemhumanTask2">
+          <standardEvent>complete</standardEvent>
+        </planItemOnPart>
+      </sentry>
+      <sentry id="sentryentryCriterion1">
+        <extensionElements>
+          <design:stencilid><![CDATA[EntryCriterion]]></design:stencilid>
+        </extensionElements>
+        <planItemOnPart id="sentryOnPartentryCriterion1" sourceRef="planItemeventListener1">
+          <standardEvent>occur</standardEvent>
+        </planItemOnPart>
+      </sentry>
+      <sentry id="sentryentryCriterion2">
+        <extensionElements>
+          <design:stencilid><![CDATA[EntryCriterion]]></design:stencilid>
+        </extensionElements>
+        <planItemOnPart id="sentryOnPartentryCriterion2" sourceRef="planItemhumanTask1">
+          <standardEvent>complete</standardEvent>
+        </planItemOnPart>
+      </sentry>
+      <sentry id="sentryentryCriterion3">
+        <extensionElements>
+          <design:stencilid><![CDATA[EntryCriterion]]></design:stencilid>
+        </extensionElements>
+        <planItemOnPart id="sentryOnPartentryCriterion3" sourceRef="planItemdataObjectCreateTask1">
+          <standardEvent>complete</standardEvent>
+        </planItemOnPart>
+      </sentry>
+      <humanTask id="humanTask1" name="Review Leave Application" flowable:assignee="${initiator}" flowable:formKey="leaveReviewerForm" flowable:formFieldValidation="false">
+        <extensionElements>
+          <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+          <design:stencilid><![CDATA[HumanTask]]></design:stencilid>
+          <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+        </extensionElements>
+      </humanTask>
+      <task id="dataObjectCreateTask1" name="Create" flowable:type="java" flowable:delegateExpression="${dataObjectServiceTask}">
+        <extensionElements>
+          <flowable:serviceTaskType><![CDATA[data-object]]></flowable:serviceTaskType>
+          <flowable:dataObjectMapping definitionKey="leaveModelObject" operationKey="create" type="create"></flowable:dataObjectMapping>
+          <flowable:inputParameter name="empID" value="${employeeID}"></flowable:inputParameter>
+          <flowable:inputParameter name="empName" value="${employeeName}"></flowable:inputParameter>
+          <flowable:inputParameter name="reason" value="${reasonForLeave}"></flowable:inputParameter>
+          <flowable:inputParameter name="applyFrom" value="${applyFrom}"></flowable:inputParameter>
+          <flowable:inputParameter name="applyTo" value="${applyTo}"></flowable:inputParameter>
+          <flowable:outputVariableName><![CDATA[leavedetails]]></flowable:outputVariableName>
+          <design:stencilid><![CDATA[DataObjectCreateTask]]></design:stencilid>
+          <design:stencilsuperid><![CDATA[ServiceTask]]></design:stencilsuperid>
+        </extensionElements>
+      </task>
+      <eventListener id="eventListener1">
+        <extensionElements>
+          <flowable:eventType><![CDATA[leaveOutboundEvent]]></flowable:eventType>
+          <flowable:eventOutParameter source="EmployeeId" target="employeeID"></flowable:eventOutParameter>
+          <flowable:eventOutParameter source="EmployeeName" target="employeeName"></flowable:eventOutParameter>
+          <flowable:eventOutParameter source="reasonForLeave" target="reasonForLeave"></flowable:eventOutParameter>
+          <flowable:eventOutParameter source="typeOfLeave" target="typeOfLeave"></flowable:eventOutParameter>
+          <flowable:eventOutParameter source="applyFrom" target="applyFrom"></flowable:eventOutParameter>
+          <flowable:eventOutParameter source="applyTo" target="applyTo"></flowable:eventOutParameter>
+          <flowable:channelKey><![CDATA[leaveInboundChannel]]></flowable:channelKey>
+          <design:stencilid><![CDATA[EventListener]]></design:stencilid>
+        </extensionElements>
+      </eventListener>
+      <humanTask id="humanTask2" name="Show Forms" flowable:assignee="${initiator}" flowable:formKey="leaveShowForm" flowable:formFieldValidation="false">
+        <extensionElements>
+          <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+          <design:stencilid><![CDATA[HumanTask]]></design:stencilid>
+          <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+        </extensionElements>
+      </humanTask>
+      <exitCriterion id="exitCriterion1" sentryRef="sentryexitCriterion1"></exitCriterion>
+    </casePlanModel>
+  </case>
+  <cmmndi:CMMNDI>
+    <cmmndi:CMMNDiagram id="CMMNDiagram_leaveCaseModel">
+      <cmmndi:CMMNShape id="CMMNShape_onecaseplanmodel1" cmmnElementRef="onecaseplanmodel1">
+        <dc:Bounds height="754.0" width="758.0" x="30.0" y="45.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_exitCriterion1" cmmnElementRef="exitCriterion1">
+        <dc:Bounds height="28.0" width="18.0" x="779.0" y="165.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItemhumanTask1" cmmnElementRef="planItemhumanTask1">
+        <dc:Bounds height="80.0" width="100.0" x="180.0" y="150.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_entryCriterion1" cmmnElementRef="entryCriterion1">
+        <dc:Bounds height="28.0" width="18.0" x="171.0" y="176.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItemdataObjectCreateTask1" cmmnElementRef="planItemdataObjectCreateTask1">
+        <dc:Bounds height="80.0" width="100.0" x="375.0" y="145.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_entryCriterion2" cmmnElementRef="entryCriterion2">
+        <dc:Bounds height="28.0" width="18.0" x="366.0" y="177.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItemeventListener1" cmmnElementRef="planItemeventListener1">
+        <dc:Bounds height="30.0" width="30.0" x="90.0" y="170.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItemhumanTask2" cmmnElementRef="planItemhumanTask2">
+        <dc:Bounds height="80.0" width="100.0" x="571.0" y="150.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_entryCriterion3" cmmnElementRef="entryCriterion3">
+        <dc:Bounds height="28.0" width="18.0" x="562.0" y="180.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNEdge id="CMMNEdge_connector1" cmmnElementRef="planItemeventListener1" targetCMMNElementRef="entryCriterion1">
+        <di:extension>
+          <flowable:docker type="source" x="15.0" y="15.0"></flowable:docker>
+          <flowable:docker type="target" x="9.0" y="14.0"></flowable:docker>
+        </di:extension>
+        <di:waypoint x="119.9499888775552" y="185.0"></di:waypoint>
+        <di:waypoint x="145.5" y="185.0"></di:waypoint>
+        <di:waypoint x="145.5" y="190.0"></di:waypoint>
+        <di:waypoint x="171.0" y="190.0"></di:waypoint>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNEdge>
+      <cmmndi:CMMNEdge id="CMMNEdge_connector2" cmmnElementRef="planItemhumanTask1" targetCMMNElementRef="entryCriterion2">
+        <di:extension>
+          <flowable:docker type="source" x="50.0" y="40.0"></flowable:docker>
+          <flowable:docker type="target" x="9.0" y="14.0"></flowable:docker>
+        </di:extension>
+        <di:waypoint x="279.95000000000005" y="190.0"></di:waypoint>
+        <di:waypoint x="327.5" y="190.0"></di:waypoint>
+        <di:waypoint x="327.5" y="191.0"></di:waypoint>
+        <di:waypoint x="366.0" y="191.0"></di:waypoint>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNEdge>
+      <cmmndi:CMMNEdge id="CMMNEdge_connector3" cmmnElementRef="planItemdataObjectCreateTask1" targetCMMNElementRef="entryCriterion3">
+        <di:extension>
+          <flowable:docker type="source" x="50.0" y="40.0"></flowable:docker>
+          <flowable:docker type="target" x="9.0" y="14.0"></flowable:docker>
+        </di:extension>
+        <di:waypoint x="474.95000000000005" y="185.0"></di:waypoint>
+        <di:waypoint x="523.0" y="185.0"></di:waypoint>
+        <di:waypoint x="523.0" y="194.0"></di:waypoint>
+        <di:waypoint x="562.0" y="194.0"></di:waypoint>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNEdge>
+      <cmmndi:CMMNEdge id="CMMNEdge_connector4" cmmnElementRef="planItemhumanTask2" targetCMMNElementRef="exitCriterion1">
+        <di:extension>
+          <flowable:docker type="source" x="50.0" y="40.0"></flowable:docker>
+          <flowable:docker type="target" x="9.0" y="14.0"></flowable:docker>
+        </di:extension>
+        <di:waypoint x="670.9499999999999" y="190.0"></di:waypoint>
+        <di:waypoint x="725.0" y="190.0"></di:waypoint>
+        <di:waypoint x="725.0" y="179.0"></di:waypoint>
+        <di:waypoint x="779.0" y="179.0"></di:waypoint>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNEdge>
+    </cmmndi:CMMNDiagram>
+  </cmmndi:CMMNDI>
+</definitions>

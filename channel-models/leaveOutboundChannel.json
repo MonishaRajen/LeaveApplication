@@ -1,0 +1,1 @@
+{"id":"CHANNEL_MODEL-16d92ef9-69da-4d1e-a7ae-ace2c44d7204","name":"Leave Outbound Channel","key":"leaveOutboundChannel","description":"","tenantId":"default","editorJson":{"type":"kafka","channelType":"outbound","serializerType":"json","topic":"leavekafka"}}
